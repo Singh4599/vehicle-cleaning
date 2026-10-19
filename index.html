@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>L V Spices — Vehicle Cleaning &amp; Sanitization Log</title>
+  <meta name="description" content="FSSAI Audit-Ready Delivery Vehicle Cleaning &amp; Sanitization Logbook for Food Transport Records." />
+  
+  <!-- Google Fonts: Inter, Playfair Display & Marck Script (for signatures) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Marck+Script&display=swap" rel="stylesheet" />
+  
+  <!-- SheetJS for Excel Exports -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=2.0.0" />
+  <link rel="icon" type="image/jpeg" href="assets/lv_spices_logo.jpg" />
+  <link rel="apple-touch-icon" href="assets/lv_spices_logo.jpg" />
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Top Branded Panel -->
+    <div class="sidebar-brand-panel">
+      <div class="brand-crest-wrapper">
+        <img src="assets/lv_spices_logo.jpg" alt="L V Spices Crest" class="brand-emblem" />
+      </div>
+      <h1 class="brand-title">L V SPICES</h1>
+      <span class="brand-subtitle">TRANSPORT HYGIENE</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <a class="nav-link active" title="Vehicle Clean Log">
+        <span class="nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </span>
+        <span class="nav-text">Vehicle Clean Log</span>
+      </a>
+      <a class="nav-link" onclick="openAddModal()" title="Add Log Entry">
+        <span class="nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </span>
+        <span class="nav-text">+ Add Log Entry</span>
+      </a>
+      <a class="nav-link" onclick="exportToExcel()" title="Download Excel (.xlsx)">
+        <span class="nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </span>
+        <span class="nav-text">Download Excel (.xlsx)</span>
+      </a>
+      <a class="nav-link" onclick="printLog()" title="Print A4 Logbook">
+        <span class="nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        </span>
+        <span class="nav-text">Print A4 Logbook</span>
+      </a>
+    </nav>
+
+    <!-- Decorative Botanical Vehicle Artwork Watermark -->
+    <div class="sidebar-artwork-container">
+      <img src="assets/vehicle-sidebar-art.png" alt="" class="sidebar-artwork-img" />
+    </div>
+
+    <!-- Bottom Compliance Card -->
+    <div class="sidebar-footer">
+      <div class="fssai-card">
+        <div class="fssai-card-content">
+          <div class="fssai-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="fssai-text">
+            <span>FSSAI Food Transport Schedule 4 GMP</span>
+          </div>
+          <svg class="fssai-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN WRAPPER ── -->
+  <div class="main-wrapper">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="topbar-titles">
+        <div class="topbar-title-row">
+          <h2 class="dashboard-main-title">Vehicle Cleaning &amp; Sanitization Log</h2>
+          <span class="audit-ready-badge">AUDIT READY</span>
+        </div>
+        <p class="dashboard-subtitle">A4 Printable Template for Food Transport Records • Auto-filled from April 2026 to Present</p>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="btn btn-print" onclick="printLog()" title="Print A4 Logbook">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span>Print A4</span>
+        </button>
+        <button class="btn btn-excel" onclick="exportToExcel()" title="Export Excel (.xlsx)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>
+          <span>Export Excel (.xlsx)</span>
+        </button>
+        <button class="btn btn-add" onclick="openAddModal()" title="Add New Entry">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>+ Add Entry</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="content-area">
+
+      <!-- Premium Hero Information Card with Delivery Van Illustration -->
+      <div class="hero-info-card">
+        <div class="hero-content">
+          <h3 class="hero-title">FSSAI Audit-Ready Delivery Vehicle Logbook</h3>
+          <p class="hero-subtitle">A4 Printable Template for Food Transport Records • Vehicle Cleaning &amp; Sanitization Log</p>
+          
+          <div class="hero-pills-row">
+            <div class="hero-pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              </span>
+              <span class="pill-text">Vehicle <strong class="pill-val">E-bike / Delivery Van</strong></span>
+            </div>
+
+            <div class="hero-pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <span class="pill-text">Supervisor <strong class="pill-val">Vishal</strong></span>
+            </div>
+
+            <div class="hero-pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </span>
+              <span class="pill-text">Cleaner <strong class="pill-val">Rajesh</strong></span>
+            </div>
+
+            <div class="hero-pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+              <span class="pill-text">Cycle <strong class="pill-val" id="current-cycle-lbl">OCT 2026</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photorealistic Delivery Van Hero Illustration -->
+        <div class="hero-van-artwork">
+          <img src="assets/lv-spices-delivery-van.png" alt="L V Spices Delivery Van" class="delivery-van-img" />
+        </div>
+      </div>
+
+      <!-- Month Navigation Bar -->
+      <div class="month-tabs-bar" id="month-tabs">
+        <!-- Rendered dynamically by JS: APRIL, MAY, JUNE, JULY, AUG, SEP, OCT -->
+      </div>
+
+      <!-- KPI Summary Cards (4 Cards Grid) -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-green">
+          <div class="kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value-row">
+              <span class="val" id="kpi-working-days">16</span>
+              <svg class="mini-trend-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="lbl">Days Cleaned (Month)</div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value-row">
+              <span class="val" id="kpi-sundays">3</span>
+              <svg class="mini-trend-icon blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div class="lbl">Sundays (Rest)</div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-amber">
+          <div class="kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><polygon points="12 2 12 17 19 21 12 2"/><polygon points="12 2 5 21 12 17 12 2"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value-row">
+              <span class="val" id="kpi-total-cleaned">173</span>
+              <svg class="mini-trend-icon amber" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="20" x2="18" y2="6"/><line x1="12" y1="20" x2="12" y2="10"/><line x1="6" y1="20" x2="6" y2="15"/></svg>
+            </div>
+            <div class="lbl">Total Apr–Oct Cleanings</div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-red">
+          <div class="kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value-row">
+              <span class="val highlight-red" id="kpi-compliance">100% OK</span>
+              <svg class="mini-trend-icon red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="20" x2="18" y2="4"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="6" y1="20" x2="6" y2="12"/></svg>
+            </div>
+            <div class="lbl">FSSAI Compliance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="table-card">
+        <div class="table-header-bar">
+          <div class="thb-title">
+            <span class="table-title-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </span>
+            <span class="table-title-text">Delivery Vehicle Cleaning &amp; Sanitization Log</span>
+          </div>
+          <div class="thb-actions">
+            <button class="btn btn-new-row" onclick="openAddModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              + New Row
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:115px;">DATE</th>
+                <th style="width:130px;">VEHICLE NO.</th>
+                <th style="width:110px;">TIME</th>
+                <th style="width:130px;">CLEANED BY</th>
+                <th style="width:100px;">REMARKS</th>
+                <th style="width:130px;">VERIFIED</th>
+                <th style="width:120px; text-align:center;">SIGN</th>
+                <th style="width:60px; text-align:center;">ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="vehicle-tbody">
+              <!-- Rendered dynamically by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── EDIT / ADD MODAL ── -->
+<div class="modal-overlay" id="edit-modal" style="display:none;" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modal-title">Edit Vehicle Cleaning Log</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="m-date">Date *</label>
+        <input type="date" class="form-control" id="m-date" />
+      </div>
+      <div class="form-group">
+        <label for="m-vehicle">Vehicle No. * (e.g. E-bike or Delivery Van)</label>
+        <input type="text" class="form-control" id="m-vehicle" value="E-bike" />
+      </div>
+      <div class="form-group">
+        <label for="m-time">Time * (e.g. 08:45 AM)</label>
+        <input type="text" class="form-control" id="m-time" value="08:45 AM" />
+      </div>
+      <div class="form-group">
+        <label for="m-cleaner">Cleaned By *</label>
+        <input type="text" class="form-control" id="m-cleaner" value="Rajesh" />
+      </div>
+      <div class="form-group">
+        <label for="m-remarks">Remarks *</label>
+        <input type="text" class="form-control" id="m-remarks" value="Ok" />
+      </div>
+      <div class="form-group">
+        <label for="m-verified">Verified By *</label>
+        <input type="text" class="form-control" id="m-verified" value="Vishal" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-modal-save" onclick="saveLogEntry()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js?v=2.0.0"></script>
+</body>
+</html>
