@@ -477,8 +477,8 @@ html, body {
   right: 0;
   bottom: 0;
   top: 0;
-  width: 45%;
-  max-width: 520px;
+  width: 46%;
+  max-width: 540px;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -491,6 +491,7 @@ html, body {
   height: 100%;
   object-fit: contain;
   object-position: right bottom;
+  mix-blend-mode: multiply;
 }
 
 /* ==========================================================================
