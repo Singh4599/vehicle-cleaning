@@ -2,7 +2,7 @@
 // Automated generation from 2026-04-01 to 2026-10-19 with full manual edit/add & Excel export
 
 const STORAGE_KEY = 'lv_vehicle_cleaning_logs_v1';
-const MONTH_NAMES = ['APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT'];
+const MONTH_NAMES = ['APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const MONTH_MAP = {
   'APRIL': '2026-04',
   'MAY': '2026-05',
@@ -10,10 +10,19 @@ const MONTH_MAP = {
   'JULY': '2026-07',
   'AUG': '2026-08',
   'SEP': '2026-09',
-  'OCT': '2026-10'
+  'OCT': '2026-10',
+  'NOV': '2026-11',
+  'DEC': '2026-12'
 };
 
-let activeMonth = 'OCT';
+function getCurrentMonthKey() {
+  const m = new Date().getMonth();
+  const keys = ['JAN', 'FEB', 'MAR', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const cur = keys[m];
+  return MONTH_NAMES.includes(cur) ? cur : 'OCT';
+}
+
+let activeMonth = getCurrentMonthKey();
 let logs = [];
 let editingId = null;
 
