@@ -24,7 +24,7 @@ const SAMPLE_TIMES = ['8:40 AM', '8:45 AM', '8:50 AM', '8:55 AM', '8:42 AM', '8:
 function generateHistoricalLogs() {
   const generated = [];
   const start = new Date(2026, 3, 1); // April 1, 2026
-  const end = new Date(2026, 9, 19);   // October 19, 2026
+  const end = new Date(); // Always today
 
   let cur = new Date(start);
   let id = 1;
