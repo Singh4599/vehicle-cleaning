@@ -409,16 +409,16 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 155px;
+  min-height: 145px;
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 58%;
+  max-width: 68%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .hero-title {
@@ -437,26 +437,28 @@ html, body {
   line-height: 1.4;
 }
 
-/* Four Info Pills */
+/* Four Info Pills — all in one row */
 .hero-pills-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 8px;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 6px;
+  align-items: center;
 }
 
 .hero-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: var(--radius-pill);
-  padding: 6.5px 14px;
-  font-size: 11.5px;
+  padding: 5px 11px;
+  font-size: 11px;
   font-weight: 600;
   color: #475569;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  white-space: nowrap;
 }
 
 .pill-icon {
