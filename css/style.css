@@ -727,7 +727,7 @@ html, body {
   border-collapse: collapse;
   text-align: left;
   font-size: 12.5px;
-  min-width: 900px;
+  table-layout: auto;
 }
 
 /* Table Header in Deep Maroon Gradient */
