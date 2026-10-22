@@ -144,7 +144,7 @@ function renderTable() {
   const monthLogs = logs.filter(item => item.date.startsWith(monthPrefix));
 
   if (monthLogs.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#64748B;">No vehicle logs recorded for ${activeMonth} 2026</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#64748B;">No vehicle logs recorded for ${activeMonth} 2026</td></tr>`;
     return;
   }
 
@@ -154,11 +154,10 @@ function renderTable() {
         <tr class="row-sunday">
           <td style="text-align:center; font-weight:700;">${item.displayDate}</td>
           <td style="text-align:center;"><span class="sunday-badge">SUNDAY</span></td>
-          <td style="text-align:center;">SUNDAY</td>
-          <td style="text-align:center;">SUNDAY</td>
-          <td style="text-align:center;">SUNDAY</td>
-          <td style="text-align:center;">SUNDAY</td>
-          <td style="text-align:center;"><span style="color:#94A3B8;">—</span></td>
+          <td style="text-align:center; color:#94A3B8; font-style:italic;">SUNDAY</td>
+          <td style="text-align:center; color:#94A3B8; font-style:italic;">SUNDAY</td>
+          <td style="text-align:center; color:#94A3B8; font-style:italic;">SUNDAY</td>
+          <td style="text-align:center; color:#94A3B8; font-style:italic;">SUNDAY</td>
           <td style="text-align:center;">
             <button class="action-icon-btn" onclick="openEditModal(${item.id})" title="Edit Row">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
