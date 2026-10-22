@@ -1,7 +1,7 @@
 // app.js — Vehicle Cleaning & Sanitization Logbook
 // Automated generation from 2026-04-01 to 2026-10-19 with full manual edit/add & Excel export
 
-const STORAGE_KEY = 'lv_vehicle_cleaning_logs_v1';
+const STORAGE_KEY = 'lv_vehicle_cleaning_logs_v2';
 const MONTH_NAMES = ['APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const MONTH_MAP = {
   'APRIL': '2026-04',
@@ -29,47 +29,64 @@ let editingId = null;
 // Realistic variations for morning vehicle cleaning
 const SAMPLE_TIMES = ['8:40 AM', '8:45 AM', '8:50 AM', '8:55 AM', '8:42 AM', '8:48 AM', '8:52 AM'];
 
-// Generate dataset starting from 1st April 2026 up to today (19th October 2026)
+// Generate dataset starting from 1st April 2026 up to today
 function generateHistoricalLogs() {
   const generated = [];
   const start = new Date(2026, 3, 1); // April 1, 2026
   const end = new Date(); // Always today
+
+  // Pre-compute which days are Mahesh per month (5-7 random working days, seeded by month)
+  function getMaheshDaysForMonth(year, month) {
+    // Simple seeded shuffle using year+month so result is consistent
+    const seed = year * 100 + month;
+    const count = 5 + (seed % 3); // 5, 6, or 7
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const workingDays = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (new Date(year, month - 1, d).getDay() !== 0) workingDays.push(d);
+    }
+    // Seeded shuffle (Fisher-Yates with seed)
+    let s = seed;
+    for (let i = workingDays.length - 1; i > 0; i--) {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const j = Math.abs(s) % (i + 1);
+      [workingDays[i], workingDays[j]] = [workingDays[j], workingDays[i]];
+    }
+    return new Set(workingDays.slice(0, count));
+  }
+
+  // Cache Mahesh days per month
+  const maheshCache = {};
 
   let cur = new Date(start);
   let id = 1;
 
   while (cur <= end) {
     const y = cur.getFullYear();
-    const m = String(cur.getMonth() + 1).padStart(2, '0');
-    const d = String(cur.getDate()).padStart(2, '0');
-    const dateStr = `${y}-${m}-${d}`;
-    const displayDate = `${d}/${m}/${y}`;
-    const dayOfWeek = cur.getDay(); // 0 is Sunday
+    const mo = cur.getMonth() + 1;
+    const d = cur.getDate();
+    const m = String(mo).padStart(2, '0');
+    const dd = String(d).padStart(2, '0');
+    const dateStr = `${y}-${m}-${dd}`;
+    const displayDate = `${dd}/${m}/${y}`;
+    const dayOfWeek = cur.getDay();
 
     if (dayOfWeek === 0) {
       generated.push({
-        id: id++,
-        date: dateStr,
-        displayDate: displayDate,
-        vehicleNo: 'SUNDAY',
-        time: 'SUNDAY',
-        cleanedBy: 'SUNDAY',
-        remarks: 'SUNDAY',
-        verified: 'SUNDAY',
-        isSunday: true
+        id: id++, date: dateStr, displayDate: displayDate,
+        vehicleNo: 'SUNDAY', time: 'SUNDAY', cleanedBy: 'SUNDAY',
+        remarks: 'SUNDAY', verified: 'SUNDAY', isSunday: true
       });
     } else {
+      const cacheKey = `${y}-${mo}`;
+      if (!maheshCache[cacheKey]) maheshCache[cacheKey] = getMaheshDaysForMonth(y, mo);
+      const cleaner = maheshCache[cacheKey].has(d) ? 'Mahesh' : 'Rajesh';
       const time = SAMPLE_TIMES[(id * 3) % SAMPLE_TIMES.length];
       generated.push({
-        id: id++,
-        date: dateStr,
-        displayDate: displayDate,
-        vehicleNo: 'E-bike',
-        time: time,
-        cleanedBy: 'Rajesh',
-        remarks: 'Ok',
-        verified: 'Vishal',
-        isSunday: false
+        id: id++, date: dateStr, displayDate: displayDate,
+        vehicleNo: 'E-bike', time: time,
+        cleanedBy: cleaner,
+        remarks: 'Ok', verified: 'Vishal', isSunday: false
       });
     }
 
@@ -150,7 +167,6 @@ function renderTable() {
         </tr>
       `;
     }
-
     return `
       <tr>
         <td style="font-weight:700; color:#334155; white-space:nowrap;">${item.displayDate}</td>
@@ -159,9 +175,6 @@ function renderTable() {
         <td style="font-weight:600; color:#0F172A;">${escapeHtml(item.cleanedBy)}</td>
         <td><span class="status-badge ok">${escapeHtml(item.remarks)}</span></td>
         <td style="font-weight:600; color:#334155;">${escapeHtml(item.verified)}</td>
-        <td style="text-align:center;">
-          <span class="signature-preview">Vishal</span>
-        </td>
         <td style="text-align:center;">
           <button class="action-icon-btn" onclick="openEditModal(${item.id})" title="Edit Row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -314,7 +327,7 @@ window.exportToExcel = function() {
       ["A4 Printable Template for Food Transport Records"],
       ["Vehicle Cleaning & Sanitization Log"],
       [], // blank row
-      ["Date", "Vehicle No.", "Time", "Cleaned By", "Remarks", "Verified", "Sign"]
+      ["Date", "Vehicle No.", "Time", "Cleaned By", "Remarks", "Verified"]
     ];
 
     monthLogs.forEach(item => {
@@ -324,8 +337,7 @@ window.exportToExcel = function() {
         item.time,
         item.cleanedBy,
         item.remarks,
-        item.verified,
-        item.isSunday ? "" : "Vishal (Signed)"
+        item.verified
       ]);
     });
 
@@ -338,7 +350,6 @@ window.exportToExcel = function() {
       { wch: 12 },
       { wch: 16 },
       { wch: 14 },
-      { wch: 16 },
       { wch: 16 }
     ];
 
