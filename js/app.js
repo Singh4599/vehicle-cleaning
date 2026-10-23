@@ -80,7 +80,7 @@ function generateHistoricalLogs() {
     } else {
       const cacheKey = `${y}-${mo}`;
       if (!maheshCache[cacheKey]) maheshCache[cacheKey] = getMaheshDaysForMonth(y, mo);
-      const cleaner = maheshCache[cacheKey].has(d) ? 'Mahesh' : 'Rajesh';
+      const cleaner = maheshCache[cacheKey].has(d) ? 'Mahesh' : 'BHIMLAL SHARMA';
       const time = SAMPLE_TIMES[(id * 3) % SAMPLE_TIMES.length];
       generated.push({
         id: id++, date: dateStr, displayDate: displayDate,
@@ -211,7 +211,7 @@ window.openAddModal = function() {
   document.getElementById('m-date').value = today;
   document.getElementById('m-vehicle').value = 'E-bike';
   document.getElementById('m-time').value = '08:45';
-  document.getElementById('m-cleaner').value = 'Rajesh';
+  document.getElementById('m-cleaner').value = 'BHIMLAL SHARMA';
   document.getElementById('m-remarks').value = 'Ok';
   document.getElementById('m-verified').value = 'Vishal';
 
@@ -243,7 +243,7 @@ window.saveLogEntry = function() {
   const dateVal = document.getElementById('m-date').value;
   const vehicleVal = document.getElementById('m-vehicle').value.trim() || 'E-bike';
   let timeVal = document.getElementById('m-time').value;
-  const cleanerVal = document.getElementById('m-cleaner').value.trim() || 'Rajesh';
+  const cleanerVal = document.getElementById('m-cleaner').value.trim() || 'BHIMLAL SHARMA';
   const remarksVal = document.getElementById('m-remarks').value.trim() || 'Ok';
   const verifiedVal = document.getElementById('m-verified').value.trim() || 'Vishal';
 
