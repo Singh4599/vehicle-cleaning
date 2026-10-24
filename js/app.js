@@ -459,26 +459,28 @@ window.printLog = function() {
 <html><head><meta charset="UTF-8"/>
 <title>LV Spices — Vehicle Cleaning Log</title>
 <style>
-  @page { size: A4 portrait; margin: 10mm 8mm 12mm 8mm; }
+  /* @page margin:0 suppresses browser's default date/URL headers & footers */
+  @page { size: A4 portrait; margin: 0; }
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color:#000; background:#fff; }
-  .header { border:2px solid #000; padding:7pt 9pt; margin-bottom:5pt; }
-  .header h1 { font-size:13pt; font-weight:800; text-transform:uppercase; letter-spacing:0.5pt; }
-  .header p { font-size:7.5pt; color:#444; margin-top:2pt; }
-  .pills { display:flex; flex-wrap:wrap; gap:5pt; margin-top:5pt; }
-  .pill { border:1px solid #555; padding:1pt 5pt; font-size:7pt; border-radius:3pt; }
+  /* body padding replaces @page margins */
+  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color:#000; background:#fff;
+    padding: 11mm 10mm 11mm 10mm; width: 210mm; }
+  .header { border:2px solid #000; padding:8pt 10pt; margin-bottom:6pt; }
+  .header h1 { font-size:14pt; font-weight:800; text-transform:uppercase; letter-spacing:0.5pt; }
+  .header p { font-size:8.5pt; color:#444; margin-top:3pt; }
+  .pills { display:flex; flex-wrap:wrap; gap:5pt; margin-top:6pt; }
+  .pill { border:1px solid #555; padding:1.5pt 6pt; font-size:8pt; border-radius:3pt; }
   .pill b { color:#1D4ED8; }
-  table { width:100%; border-collapse:collapse; table-layout:fixed; margin-top:4pt; }
+  table { width:100%; border-collapse:collapse; table-layout:fixed; margin-top:5pt; }
   thead { display:table-header-group; }
-  th { background:#1a1a1a; color:#fff; padding:4pt 3pt; border:0.75pt solid #000; font-size:7pt; font-weight:700; text-align:left; white-space:nowrap; overflow:hidden; }
-  td { padding:3pt 3pt; border:0.5pt solid #999; font-size:7pt; vertical-align:middle; overflow:hidden; word-break:break-word; }
-  tr.sun td { background:#f3f3f3; color:#777; font-style:italic; }
+  th { background:#1a1a1a; color:#fff; padding:5pt 4pt; border:0.75pt solid #000; font-size:8pt; font-weight:700; text-align:left; white-space:nowrap; overflow:hidden; }
+  td { padding:4pt 4pt; border:0.5pt solid #999; font-size:8pt; vertical-align:middle; overflow:hidden; word-break:break-word; }
+  tr.sun td { background:#f0f0f0; color:#777; font-style:italic; }
   tr:nth-child(even):not(.sun) td { background:#fafafa; }
-  .badge { background:#d4edda; color:#155724; border:0.5pt solid #155724; padding:0 3pt; border-radius:2pt; font-size:6.5pt; font-weight:700; }
-  /* 6 columns — 194mm total (A4 210 - 16mm margins)
-     DATE 22mm | VEHICLE 28mm | TIME 22mm | CLEANED BY 50mm | REMARKS 30mm | VERIFIED 42mm = 194mm */
-  col.c1{width:22mm} col.c2{width:28mm} col.c3{width:22mm} col.c4{width:50mm} col.c5{width:30mm} col.c6{width:42mm}
-  .footer { margin-top:8pt; font-size:7pt; color:#666; border-top:0.5pt solid #ccc; padding-top:4pt; text-align:center; }
+  .badge { background:#d4edda; color:#155724; border:0.5pt solid #155724; padding:0 4pt; border-radius:2pt; font-size:7.5pt; font-weight:700; }
+  /* 6 columns — 190mm total (210mm - 20mm body padding)
+     DATE 22mm | VEHICLE 28mm | TIME 22mm | CLEANED BY 52mm | REMARKS 28mm | VERIFIED 38mm = 190mm */
+  col.c1{width:22mm} col.c2{width:28mm} col.c3{width:22mm} col.c4{width:52mm} col.c5{width:28mm} col.c6{width:38mm}
 </style></head><body>
 <div class="header">
   <h1>Vehicle Cleaning &amp; Sanitization Log</h1>
@@ -497,7 +499,6 @@ window.printLog = function() {
   </tr></thead>
   <tbody>${rowsHtml}</tbody>
 </table>
-<div class="footer">L V Spices — Vehicle Cleaning Register &nbsp;|&nbsp; ${activeMonth} 2026 &nbsp;|&nbsp; Printed: ${new Date().toLocaleDateString('en-IN')}</div>
 <script>window.onload=function(){window.print();setTimeout(function(){window.close();},800);};<\/script>
 </body></html>`;
 
