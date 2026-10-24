@@ -459,12 +459,10 @@ window.printLog = function() {
 <html><head><meta charset="UTF-8"/>
 <title>LV Spices — Vehicle Cleaning Log</title>
 <style>
-  /* @page margin:0 suppresses browser's default date/URL headers & footers */
   @page { size: A4 portrait; margin: 0; }
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  /* body padding replaces @page margins */
-  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color:#000; background:#fff;
-    padding: 11mm 10mm 11mm 10mm; width: 210mm; }
+  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color:#000; background:#fff; }
+  .wrap { width: 190mm; margin: 11mm auto 11mm auto; }
   .header { border:2px solid #000; padding:8pt 10pt; margin-bottom:6pt; }
   .header h1 { font-size:14pt; font-weight:800; text-transform:uppercase; letter-spacing:0.5pt; }
   .header p { font-size:8.5pt; color:#444; margin-top:3pt; }
@@ -482,6 +480,7 @@ window.printLog = function() {
      DATE 22mm | VEHICLE 28mm | TIME 22mm | CLEANED BY 52mm | REMARKS 28mm | VERIFIED 38mm = 190mm */
   col.c1{width:22mm} col.c2{width:28mm} col.c3{width:22mm} col.c4{width:52mm} col.c5{width:28mm} col.c6{width:38mm}
 </style></head><body>
+<div class="wrap">
 <div class="header">
   <h1>Vehicle Cleaning &amp; Sanitization Log</h1>
   <p>A4 Printable Template for Food Transport Records &bull; Vehicle Cleaning &amp; Sanitization Log</p>
@@ -499,6 +498,7 @@ window.printLog = function() {
   </tr></thead>
   <tbody>${rowsHtml}</tbody>
 </table>
+</div>
 <script>window.onload=function(){window.print();setTimeout(function(){window.close();},800);};<\/script>
 </body></html>`;
 
