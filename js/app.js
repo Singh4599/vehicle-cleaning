@@ -100,9 +100,13 @@ function initData() {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     try {
-      logs = JSON.parse(stored);
+      let parsed = JSON.parse(stored);
+      // Always extend to today — fills missing days since last load
+      logs = extendLogsToToday(parsed);
+      if (logs.length !== parsed.length) saveToStorage();
     } catch (e) {
       logs = generateHistoricalLogs();
+      saveToStorage();
     }
   } else {
     logs = generateHistoricalLogs();
@@ -116,6 +120,80 @@ function initData() {
 
 function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+}
+
+// Extend existing logs up to today — fills any missing days without losing edits
+function extendLogsToToday(existing) {
+  if (!existing.length) return existing;
+
+  const lastDateStr = existing
+    .filter(r => r.date && r.date.length === 10)
+    .map(r => r.date)
+    .sort()
+    .pop();
+
+  if (!lastDateStr) return existing;
+
+  const lastDate = new Date(lastDateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  lastDate.setHours(0, 0, 0, 0);
+  if (lastDate >= today) return existing;
+
+  const existingDates = new Set(existing.map(r => r.date));
+  const toAdd = [];
+  let cur = new Date(lastDate);
+  cur.setDate(cur.getDate() + 1);
+  let nextId = Math.max(...existing.map(r => r.id || 0)) + 1;
+
+  // Reuse mahesh logic
+  function getMaheshDaysForMonth(year, month) {
+    const seed = year * 100 + month;
+    const count = 5 + (seed % 3);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const workingDays = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (new Date(year, month - 1, d).getDay() !== 0) workingDays.push(d);
+    }
+    let s = seed;
+    for (let i = workingDays.length - 1; i > 0; i--) {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const j = Math.abs(s) % (i + 1);
+      [workingDays[i], workingDays[j]] = [workingDays[j], workingDays[i]];
+    }
+    return new Set(workingDays.slice(0, count));
+  }
+  const maheshCache = {};
+
+  while (cur <= today) {
+    const y = cur.getFullYear();
+    const mo = cur.getMonth() + 1;
+    const d = cur.getDate();
+    const m = String(mo).padStart(2, '0');
+    const dd = String(d).padStart(2, '0');
+    const dateStr = `${y}-${m}-${dd}`;
+    const displayDate = `${dd}/${m}/${y}`;
+    const dayOfWeek = cur.getDay();
+
+    if (!existingDates.has(dateStr)) {
+      if (dayOfWeek === 0) {
+        toAdd.push({ id: nextId++, date: dateStr, displayDate, vehicleNo: 'SUNDAY', time: 'SUNDAY', cleanedBy: 'SUNDAY', remarks: 'SUNDAY', verified: 'SUNDAY', isSunday: true });
+      } else {
+        const cacheKey = `${y}-${mo}`;
+        if (!maheshCache[cacheKey]) maheshCache[cacheKey] = getMaheshDaysForMonth(y, mo);
+        const cleaner = maheshCache[cacheKey].has(d) ? 'Mahesh' : 'Rajesh';
+        const time = SAMPLE_TIMES[(nextId * 3) % SAMPLE_TIMES.length];
+        toAdd.push({ id: nextId++, date: dateStr, displayDate, vehicleNo: 'E-bike', time, cleanedBy: cleaner, remarks: 'Ok', verified: 'Vishal', isSunday: false });
+      }
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  if (toAdd.length > 0) {
+    console.log(`[VehicleCleaning] Auto-extending: +${toAdd.length} new days`);
+    return [...existing, ...toAdd];
+  }
+  return existing;
 }
 
 function renderMonthTabs() {
@@ -360,7 +438,72 @@ window.exportToExcel = function() {
 };
 
 window.printLog = function() {
-  window.print();
+  const monthPrefix = MONTH_MAP[activeMonth] || '2026-10';
+  const monthLogs = logs.filter(r => r.date && r.date.startsWith(monthPrefix));
+
+  const rowsHtml = monthLogs.map(r => {
+    if (r.isSunday) {
+      return `<tr class="sun"><td>${escapeHtml(r.displayDate)}</td><td colspan="5" style="text-align:center;font-style:italic;color:#888;">SUNDAY — REST DAY</td></tr>`;
+    }
+    return `<tr>
+      <td>${escapeHtml(r.displayDate)}</td>
+      <td>${escapeHtml(r.vehicleNo)}</td>
+      <td style="text-align:center;">${escapeHtml(r.time)}</td>
+      <td>${escapeHtml(r.cleanedBy)}</td>
+      <td style="text-align:center;"><span class="badge">${escapeHtml(r.remarks)}</span></td>
+      <td style="text-align:center;">${escapeHtml(r.verified)}</td>
+    </tr>`;
+  }).join('');
+
+  const printHtml = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/>
+<title>LV Spices — Vehicle Cleaning Log</title>
+<style>
+  @page { size: A4 portrait; margin: 10mm 8mm 12mm 8mm; }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color:#000; background:#fff; }
+  .header { border:2px solid #000; padding:7pt 9pt; margin-bottom:5pt; }
+  .header h1 { font-size:13pt; font-weight:800; text-transform:uppercase; letter-spacing:0.5pt; }
+  .header p { font-size:7.5pt; color:#444; margin-top:2pt; }
+  .pills { display:flex; flex-wrap:wrap; gap:5pt; margin-top:5pt; }
+  .pill { border:1px solid #555; padding:1pt 5pt; font-size:7pt; border-radius:3pt; }
+  .pill b { color:#1D4ED8; }
+  table { width:100%; border-collapse:collapse; table-layout:fixed; margin-top:4pt; }
+  thead { display:table-header-group; }
+  th { background:#1a1a1a; color:#fff; padding:4pt 3pt; border:0.75pt solid #000; font-size:7pt; font-weight:700; text-align:left; white-space:nowrap; overflow:hidden; }
+  td { padding:3pt 3pt; border:0.5pt solid #999; font-size:7pt; vertical-align:middle; overflow:hidden; word-break:break-word; }
+  tr.sun td { background:#f3f3f3; color:#777; font-style:italic; }
+  tr:nth-child(even):not(.sun) td { background:#fafafa; }
+  .badge { background:#d4edda; color:#155724; border:0.5pt solid #155724; padding:0 3pt; border-radius:2pt; font-size:6.5pt; font-weight:700; }
+  /* 6 columns — 194mm total (A4 210 - 16mm margins)
+     DATE 22mm | VEHICLE 28mm | TIME 22mm | CLEANED BY 50mm | REMARKS 30mm | VERIFIED 42mm = 194mm */
+  col.c1{width:22mm} col.c2{width:28mm} col.c3{width:22mm} col.c4{width:50mm} col.c5{width:30mm} col.c6{width:42mm}
+  .footer { margin-top:8pt; font-size:7pt; color:#666; border-top:0.5pt solid #ccc; padding-top:4pt; text-align:center; }
+</style></head><body>
+<div class="header">
+  <h1>Vehicle Cleaning &amp; Sanitization Log</h1>
+  <p>A4 Printable Template for Food Transport Records &bull; Vehicle Cleaning &amp; Sanitization Log</p>
+  <div class="pills">
+    <span class="pill">🚗 Vehicle: <b>E-bike / Delivery Van</b></span>
+    <span class="pill">👤 Supervisor: <b>Vishal</b></span>
+    <span class="pill">✅ Checker: <b>Bhimlal Sharma</b></span>
+    <span class="pill">📅 Cycle: <b>${activeMonth} 2026</b></span>
+  </div>
+</div>
+<table>
+  <colgroup><col class="c1"/><col class="c2"/><col class="c3"/><col class="c4"/><col class="c5"/><col class="c6"/></colgroup>
+  <thead><tr>
+    <th>DATE</th><th>VEHICLE NO.</th><th>TIME</th><th>CLEANED BY</th><th>REMARKS</th><th>VERIFIED</th>
+  </tr></thead>
+  <tbody>${rowsHtml}</tbody>
+</table>
+<div class="footer">L V Spices — Vehicle Cleaning Register &nbsp;|&nbsp; ${activeMonth} 2026 &nbsp;|&nbsp; Printed: ${new Date().toLocaleDateString('en-IN')}</div>
+<script>window.onload=function(){window.print();setTimeout(function(){window.close();},800);};<\/script>
+</body></html>`;
+
+  const pw = window.open('', '_blank', 'width=794,height=1123');
+  if (pw) { pw.document.write(printHtml); pw.document.close(); }
+  else { document.body.classList.add('printing'); setTimeout(()=>{window.print();document.body.classList.remove('printing');},100); }
 };
 
 function escapeHtml(str) {
